@@ -25,7 +25,10 @@ export default class BindDeplyomentId {
     const resources = _.get(this.serverless.service, 'resources.Resources', null)
     if (resources) {
       const variableRegex = new RegExp(_.get(this.serverless.service, 'custom.deploymentId.variableSyntax', '__deployment__'), 'g')
-      this.serverless.service.resources.Resources = this.replaceDeploymentIdReferences(resources, deploymentId, variableRegex)
+
+      //We overwrite the template in memory so the cloudformation templte will now be out of date
+      //Fix this in the future to use the correect hooks and write to disk
+      this.serverless.service.provider.compiledCloudFormationTemplate.Resources = this.replaceDeploymentIdReferences(this.serverless.service.provider.compiledCloudFormationTemplate.Resources, deploymentId, variableRegex)
 
       const customStages = this.getCustomStages(this.serverless.service)
       if (Object.keys(customStages).length > 0) {
